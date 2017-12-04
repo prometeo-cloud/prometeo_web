@@ -1,0 +1,87 @@
+<div data-ng-controller="userRegisterCtrl as r">
+  <form name="registerForm" data-ng-submit="r.register(registerForm)" method="post" novalidate>
+    <div class="logo"><span class="sr-only">Logo</span></div>
+    <div class="input-group">
+      <label class="sr-only" for="email">EMail</label>
+      <span class="input-group-addon"><i class="fa fa-envelope">*</i></span>
+      <input class="form-control" type="email" data-ng-model="r.details.email" id="email" name="email"
+             placeholder="Your Email.  This will be your log in username" required data-lowercase autofocus>
+    </div>
+    <div data-ng-messages="registerForm.email.$error" data-ng-if="registerForm.$submitted" role="alert">
+      <div data-ng-message="required">Please enter your Email</div>
+      <div data-ng-message="email">Please correct the entered Email</div>
+    </div>
+
+    <div class="input-group">
+      <label class="sr-only" for="email">Confirm EMail</label>
+      <span class="input-group-addon"><i class="fa fa-envelope">*</i></span>
+      <input class="form-control" type="email" data-ng-model="r.confirm.email" id="emailConfirm"
+             name="emailConfirm" placeholder="Retype the email to confirm" data-match="r.details.email"
+             data-lowercase required>
+    </div>
+    <div data-ng-messages="registerForm.emailConfirm.$error"
+         data-ng-if="registerForm.$submitted && registerForm.email.$touched" role="alert">
+      <div data-ng-message="required">Please confirm your Email</div>
+      <div data-ng-message="match">The entered Emails do not match</div>
+    </div>
+
+    <div class="input-group">
+      <label class="sr-only" for="password">Password</label>
+      <span class="input-group-addon"><i class="fa fa-key">*</i></span>
+      <input class="form-control" type="password" data-ng-model="r.details.password" data-ng-pattern="r.$$dataType.PASSWORD"
+             id="password" name="password" placeholder="Password" minlength="8" maxlength="255" required>
+    </div>
+    <div data-ng-messages="registerForm.password.$error" data-ng-if="registerForm.$submitted" role="alert">
+      <div data-ng-message="required">Please choose a Password</div>
+      <div data-ng-message="password">Please correct the entered password</div>
+      <div data-ng-message="minlength">Password must be a minimum length of 8 and contain at least 1 digit and 1 character</div>
+      <div data-ng-message="pattern">Password must be a minimum length of 8 and contain at least 1 digit and 1 character</div>
+    </div>
+
+    <div class="input-group">
+      <label class="sr-only" for="passwordConfirm">Confirm Password</label>
+      <span class="input-group-addon"><i class="fa fa-key">*</i></span>
+      <input class="form-control" type="password" data-ng-model="r.confirm.password"
+             id="passwordConfirm" name="passwordConfirm" placeholder="Retype the password to confirm"
+             data-match="r.details.password" required>
+    </div>
+    <div data-ng-messages="registerForm.passwordConfirm.$error"
+         data-ng-if="registerForm.$submitted" role="alert">
+      <div data-ng-message="required">Please confirm your password</div>
+      <div data-ng-message="match">The entered Passwords do not match</div>
+    </div>
+
+    <div class="input-group">
+      <label class="sr-only" for="forename">Your Forename</label>
+      <span class="input-group-addon"><i class="fa fa-user">*</i></span>
+      <input class="form-control" type="text" id="forename" name="forename"
+             data-ng-model="r.details.forename" placeholder="Forename" required>
+    </div>
+    <div data-ng-messages="registerForm.forename.$error" data-ng-if="registerForm.$submitted" role="alert">
+      <div data-ng-message="required">Please enter your Forename</div>
+    </div>
+
+    <div class="input-group">
+      <label class="sr-only" for="surname">Your Surname</label>
+      <span class="input-group-addon"><i class="fa fa-user">*</i></span>
+      <input class="form-control" type="text" data-ng-model="r.details.surname" id="surname"
+             name="surname" placeholder="Surname" required>
+    </div>
+    <div data-ng-messages="registerForm.surname.$error" data-ng-if="registerForm.$submitted" role="alert">
+      <div data-ng-message="required">Please enter your Surname</div>
+    </div>
+
+    <div class="box">
+      <input type="checkbox" data-ng-model="register.termsofuse" name="termsofuse"
+             title="Terms of use agreement" required/>
+      * I have read and agree to the
+      <a class="link" data-ng-click="r.showTermsOfUse()">Terms of Use</a>
+    </div>
+    <div data-ng-messages="registerForm.termsofuse.$error" data-ng-if="registerForm.$submitted">
+      <div data-ng-message="required">You must agree to the Terms and Conditions to use this service</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">REGISTER</button>
+    <button type="button" data-ng-click="r.cancel()" class="btn btn-cancel">CANCEL</button>
+  </form>
+</div>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+    <p>
+        Hello ${forename}
+    </p>
+
+        <p>
+            Your account for Atos Career Dialogue has been created, please click on the URL below to activate it:
+        </p>
+        <p>
+            <a href="${baseUrl}/activate/${token}/user">Activation Link</a>
+        </p>
+        <p>
+            <span>Regards, </span>
+            <br/>
+            <em>ATOS</em>
+        </p>
+    </body>
+</html>

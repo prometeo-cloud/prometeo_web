@@ -1,0 +1,7 @@
+<div data-ng-controller="adminTermsOfUseCtrl as vm" class="container">
+  <div>
+    <h1>{{vm.termsAndConditionsHeading}}</h1>
+    <p data-ng-repeat="termsAndConditions in vm.termsAndConditionsBody">{{termsAndConditions}}</p>
+    <button type="button" class="btn btn-primary pull-right" data-ng-click="vm.back()">Back</button>
+  </div>
+</div>

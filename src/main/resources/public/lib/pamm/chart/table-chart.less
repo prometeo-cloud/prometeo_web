@@ -1,0 +1,34 @@
+table.pamm-table-chart {
+  color: black;
+  font-size: 9pt;
+
+  thead {
+    color: white;
+    background-color: #1b6d85;
+
+    i {
+      margin: 0 0 0 10px;
+      color: orange;
+    }
+
+    td {
+      cursor: pointer;
+    }
+  }
+
+  tfoot {
+    background-color: #c8e5bc;
+    font-weight: bold;
+  }
+
+  td {
+    &[data-type="negative"] {
+      color: darkred;
+      text-align: right;
+    }
+
+    &[data-type="number"] {
+      text-align: right;
+    }
+  }
+}

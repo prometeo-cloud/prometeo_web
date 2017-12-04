@@ -1,0 +1,102 @@
+/** Override Bootstrap defaults */
+.btn-cancel {
+  background-color: lightgray;
+}
+
+.nav-tabs {
+  .active a {
+    font-weight: bold;
+  }
+}
+
+/* White modal background instead of black */
+.modal-backdrop {
+  background: white;
+}
+
+.tooltip > .tooltip-inner {
+  background-color: whitesmoke;
+  color: #204d74;
+  border: 1px solid #204d74;
+}
+
+.collapsing {
+  transition: 100ms;
+}
+
+// Restore bordered fieldset
+fieldset {
+  margin-top: 10px;
+  border: 1px solid lightgray;
+  padding: 5px;
+  legend {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    padding: 0 5px 0 5px;
+    width: auto;
+    border-bottom: none;
+    font-size: 12pt;
+    font-weight: bold;
+  }
+}
+
+/* Bootstrap dialog message */
+.bootstrap-dialog-message {
+  * {
+    vertical-align: middle;
+  }
+
+  i {
+    margin-right: 15px
+  }
+}
+
+/* Atos branding Bootstrap 3 overrides */
+/* .navbar-inverse .navbar-fixed */
+/* bootstrap overrides for Blue Atos colouring and branding */
+
+nav.navbar-fixed-top + * {
+  padding-top: 70px;
+}
+
+.navbar-inverse {
+  background-color: @brand-color;
+  border-color: @brand-darkest;
+  .navbar-collapse {
+    border-color: @brand-darkest;
+  }
+  .navbar-brand {
+    color: @link-color-ondark;
+    >img {
+      height: 17px; // force size from larger version
+      width: 52px; // force size from larger version
+    }
+  }
+  .navbar-toggle {
+    border-color: @brand-darkest;
+    &:focus, &:hover {
+      background-color: @brand-darkest;
+    }
+  }
+  .navbar-nav {
+    >li {
+      >a {
+        color: @link-color-ondark;
+      }
+    }
+    .active, .open {
+      >a, >a:focus, >a:hover {
+        background-color: @brand-darkest;
+      }
+    }
+    @media (max-width: 767px) {
+      .open .dropdown-menu>li>a {
+        color: @link-color-ondark;
+      }
+      .navbar-inverse .navbar-nav .open .dropdown-menu .divider {
+        background-color: @brand-darker;
+      }
+    }
+  }
+}

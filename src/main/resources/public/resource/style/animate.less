@@ -1,0 +1,28 @@
+[data-ui-view="root-content"],
+[data-ng-if], [data-ng-show] {
+  &.ng-enter, &.ng-leave.ng-leave-active {
+    animation: fadeout linear .25s;
+  }
+
+  &.ng-enter.ng-enter-active, &.ng-leave {
+    animation: fadein linear .25s;
+  }
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
