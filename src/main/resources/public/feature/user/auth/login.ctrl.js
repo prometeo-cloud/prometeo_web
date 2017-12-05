@@ -20,12 +20,14 @@ angular.module("pamm").controller("userLoginCtrl", ["$state", "$log", "userConte
             $state.go("user.auth.reset-password-request");
         };
 
+        vm.showTermsOfUse = function () {
+            $state.go("user.auth.termsofuse");
+        };
+
         vm.login = function (loginForm) {
             if (loginForm.$valid) {
                 var waitingDialog = $$dialog.waiting("Please wait - Logging In");
-
                 vm.hasAuthenticationError = false;
-
                 userContext.login(this.credentials.username, this.credentials.password).then(
                     function success() {
                         waitingDialog.close();
@@ -33,7 +35,7 @@ angular.module("pamm").controller("userLoginCtrl", ["$state", "$log", "userConte
                     },
                     function error(errorResponse) {
                         waitingDialog.close();
-                        if (errorResponse.status == $$httpStatus.UNAUTHORIZED) {
+                        if (errorResponse.status === $$httpStatus.UNAUTHORIZED) {
                             vm.hasAuthenticationError = true;
                         } else {
                             $$dialog.error("Service temporarily unavailable. Please try again later");

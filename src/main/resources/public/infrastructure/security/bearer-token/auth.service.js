@@ -79,8 +79,8 @@ angular.module("pamm").service("authService", ["$log", "$http", "$q", "dal",
                     var user = successResponse.data;
                     credentials.token = successResponse.data.authToken;
                     deferred.resolve(user);
-                }, function (error) {
-                    deferred.reject(error);
+                }, function (errorResponse) {
+                    deferred.reject(errorResponse);
                 }
             );
             return deferred.promise;

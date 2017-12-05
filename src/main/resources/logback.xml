@@ -31,7 +31,7 @@
         </encoder>
     </appender>
 
-    <logger name="samm.domain.audit.service" additivity="false">
+    <logger name="org.gatblau.prometeo.web.domain.audit.service" additivity="false">
         <appender-ref ref="AUDIT"/>
     </logger>
 

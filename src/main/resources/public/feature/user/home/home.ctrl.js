@@ -1,23 +1,24 @@
 "use strict";
 
-angular.module("pamm").controller("homeCtrl", ["$state", "$log",
-    function ($state, $log) {
+angular.module("pamm").controller("homeCtrl", ["$state", "$log", "userContext",
+    function ($state, $log, userContext) {
         var vm = this;
 
-        vm.navigateToFeedback = function () {
-            $state.go("user.feedback");
-        };
 
-        vm.navigateToCompletedCourseList = function () {
-            $state.go("user.profile.completed");
-        };
+        vm.createProject = function (tenantForm) {
+            if (tenantForm.$valid) {
+                var waitingDialog = $$dialog.waiting("Please wait - Logging In");
 
-        vm.navigateToTopic = function () {
-            $state.go("user.topic");
+                userContext.createProject(tenantForm.projectName).then(
+                    function success() {
+                        waitingDialog.close();
+                        $$dialog.success("Project created");
+                    },
+                    function error(errorResponse) {
+                        waitingDialog.close();
+                        $$dialog.error("There is a problem creating the project");
+                    }
+                )
+            }
         };
-
-        vm.navigateToPrerequisite = function () {
-            $state.go("user.prerequisite");
-        };
-
     }]);

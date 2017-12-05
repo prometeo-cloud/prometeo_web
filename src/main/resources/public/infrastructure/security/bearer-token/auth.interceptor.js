@@ -27,7 +27,6 @@ angular.module("pamm").service("authInterceptor", ["$log", "$q", "$injector",
 
                     // Using injector to locate services to avoid circular dependency on load for $http
                     $injector.get("userContext").logout();
-                    $injector.get("adminContext").logout();
 
                     if ($state.current.name != "user.auth.login" && $state.current.name != "admin.auth.login") {
                         $state.go("user.auth.login");

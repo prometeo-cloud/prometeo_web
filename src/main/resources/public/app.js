@@ -1,4 +1,4 @@
-angular.module("pamm", ["ui.router", "nvd3", "ui.bootstrap", "ngAnimate", "ngMessages"]).run(
+angular.module("pamm", ["ui.router", "ui.bootstrap", "ngAnimate", "ngMessages"]).run(
     function ($window, $rootScope, $log) {
         $log.info("App Instantiated");
     }).config(

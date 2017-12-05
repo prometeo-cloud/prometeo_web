@@ -1,3 +1,16 @@
 <div data-ng-controller="homeCtrl as h">
-    <h1>Home page</h1>
+    <h1>Create Tenant</h1>
+    <form name="tenantForm" data-ng-submit="h.createProject(tenantForm)" method="post" novalidate>
+        <div class="form-group">
+            <label for="projectName" class="required">Project Name</label>
+            <input type="text" class="form-control" data-ng-model="efc.engagement.client"
+                   placeholder="Name of project" id="projectName" name="projectName" required>
+            <div data-ng-messages="tenantForm.projectName.$error" data-ng-if="tenantForm.$submitted" role="alert">
+                <div data-ng-message="required">Please enter the name of the project</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Create Project</button>
+        </div>
+    </form>
 </div>

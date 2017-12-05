@@ -1,3 +1,4 @@
+"use strict";
 angular.module("pamm").controller("userTermsOfUseCtrl", ["$state", "$log", "legalRefData",
     function ($state, $log, legalRefData) {
         var vm = this;
@@ -8,6 +9,6 @@ angular.module("pamm").controller("userTermsOfUseCtrl", ["$state", "$log", "lega
         })();
 
         vm.back = function () {
-            $state.go("user.auth.register");
+            $state.go("user.auth.login");
         }
     }]);

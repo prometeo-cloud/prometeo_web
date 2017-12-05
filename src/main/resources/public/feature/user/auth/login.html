@@ -1,35 +1,31 @@
 <div data-ng-controller="userLoginCtrl as login">
-  <form name="loginForm" data-ng-submit="login.login(loginForm)" method="post" novalidate>
-    <div class="input-group">
-      <label class="sr-only" for="username">Username</label>
-      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-      <input class="form-control" type="email" id="username" name="username"
-             data-ng-model="login.credentials.username"
-             placeholder="User Name (email address)" required data-lowercase autofocus>
-    </div>
-    <div data-ng-messages="loginForm.username.$error" data-ng-show="loginForm.$submitted" role="alert">
-      <div data-ng-message="required">Please enter your email address</div>
-      <div data-ng-message="email">Please enter a valid email</div>
-    </div>
-    <div class="input-group">
-      <label class="sr-only" for="password">Password</label>
-      <span class="input-group-addon"><i class="fa fa-key"></i></span>
-      <input class="form-control" type="password" data-ng-model="login.credentials.password" id="password"
-             name="password" placeholder="Password" required>
-    </div>
-    <div data-ng-messages="loginForm.password.$error" data-ng-show="loginForm.$submitted" role="alert">
-      <div data-ng-message="required">Please enter your password</div>
-    </div>
+    <form name="loginForm" data-ng-submit="login.login(loginForm)" method="post" novalidate>
+        <div class="input-group">
+            <label class="sr-only" for="username">Username</label>
+            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+            <input class="form-control" type="text" id="username" name="username"
+                   data-ng-model="login.credentials.username"
+                   placeholder="User Name (email address)" required data-lowercase autofocus>
+        </div>
+        <div data-ng-messages="loginForm.username.$error" data-ng-show="loginForm.$submitted" role="alert">
+            <div data-ng-message="required">Please enter your username</div>
+        </div>
+        <div class="input-group">
+            <label class="sr-only" for="password">Password</label>
+            <span class="input-group-addon"><i class="fa fa-key"></i></span>
+            <input class="form-control" type="password" data-ng-model="login.credentials.password" id="password"
+                   name="password" placeholder="Password" required>
+        </div>
+        <div data-ng-messages="loginForm.password.$error" data-ng-show="loginForm.$submitted" role="alert">
+            <div data-ng-message="required">Please enter your password</div>
+        </div>
 
-    <div class="alert alert-danger" data-ng-show="login.hasAuthenticationError">
-      Please check your username and password and try again
-    </div>
-    <div class="form-group">
-      <button class="btn btn-primary" type="submit">LOGIN</button>
-    </div>
-    <div class="form-group">
-      <div><a data-ng-click="login.register()">Don't have an account? Register</a></div>
-      <div><a data-ng-click="login.forgotPassword()">Forgotten password</a></div>
-    </div>
-  </form>
+        <div class="alert alert-danger" data-ng-show="login.hasAuthenticationError">
+            Please check your username and password and try again
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">LOGIN</button>
+        </div>
+        <a class="link" data-ng-click="login.showTermsOfUse()">Terms of Use</a>
+    </form>
 </div>

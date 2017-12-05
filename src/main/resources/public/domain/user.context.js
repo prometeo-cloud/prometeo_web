@@ -22,8 +22,8 @@ angular.module("pamm").service("userContext", ["$log", "$rootScope", "$q", "$sta
                     user = successResponse.user;
                     deferred.resolve(user);
                 },
-                function (error) {
-                    deferred.reject(error);
+                function (errorResponse) {
+                    deferred.reject(errorResponse);
                 }
             );
             return deferred.promise;
@@ -47,33 +47,7 @@ angular.module("pamm").service("userContext", ["$log", "$rootScope", "$q", "$sta
             $state.go(lastFromState, lastFromParams);
         };
 
-        this.getCompletedCoursesForUser = function (type) {
-            var deferred = $q.defer();
-            userRepository.getCompletedCoursesForUser(user.id, type).then(function (courses) {
-                for (var i = 0; i < courses.length; i++) {
-                    if (courses[i].feedbackRating > 0) {
-                        courses[i].rating = new Array(courses[i].feedbackRating);
-                    }
-                }
-                deferred.resolve(courses);
-            }, function (error) {
-                deferred.reject(error);
-            });
-            return deferred.promise;
-        };
-
-        this.saveCourseFeedback = function (feedback) {
-            return userRepository.saveCourseFeedback(user.id, feedback);
-        };
-
-        this.saveCompletedCourse = function(course, result) {
-            return userRepository.saveCompletedCourse(user.id,
-                {
-                    courseId : course.id,
-                    courseName : course.name,
-                    courseType: course.courseType,
-                    result : result
-                }
-            );
+        this.createProject = function (projectName) {
+            return userRepository.createProject(projectName);
         };
     }]);
