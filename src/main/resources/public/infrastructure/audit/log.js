@@ -9,7 +9,7 @@ angular.module("pamm").decorator("$log", ["$delegate", "$injector", function ($d
         ERROR: "ERROR",
         WARN: "WARNING"
     };
-    var auditEnabled = true;
+    var auditEnabled = false;
     var logToServer = function (level, message) {
         if (auditEnabled && $injector.get("authService").getToken()) {
             $injector.get("dal").http.POST("/audit", {

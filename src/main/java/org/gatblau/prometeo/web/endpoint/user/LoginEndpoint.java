@@ -1,5 +1,8 @@
 package org.gatblau.prometeo.web.endpoint.user;
 
+import org.gatblau.prometeo.web.domain.user.model.Credentials;
+import org.gatblau.prometeo.web.domain.user.service.AuthenticateOperation;
+import org.gatblau.prometeo.web.infrastructure.security.authentication.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.gatblau.prometeo.web.domain.user.model.Credentials;
-import org.gatblau.prometeo.web.domain.user.service.AuthenticateOperation;
-import org.gatblau.prometeo.web.infrastructure.security.authentication.UserPrincipal;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
@@ -59,8 +59,6 @@ public class LoginEndpoint {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
             return new ResponseEntity<>(credentials, HttpStatus.OK);
-
-
         } catch (UnsupportedEncodingException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

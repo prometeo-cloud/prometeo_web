@@ -27,7 +27,7 @@ angular.module("pamm").service("dal", ["$http", "$q", "$log", function ($http, $
                         url: apiPath,
                         headers: {
                             "Accept": "application/json, text/plain, */*",
-                            "Content-Type": "application/json;charset=UTF-8"
+                            "Content-Type": "text/plain;charset=UTF-8"
                         },
                         data: angular.toJson(itemToSave)
                     }
