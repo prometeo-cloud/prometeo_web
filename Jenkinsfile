@@ -20,7 +20,7 @@ node("maven") {
             git "${params.APP_GIT_URL}"
             // extract info from pom.xml
             def pom = readMavenPom file: "pom.xml"
-            sh "${mvnCmd} clean package -DskipTests"
+            sh "mvn clean package -DskipTests"
             // stash application template
             // stash name: "app-template", includes: "${params.APP_TEMPLATE}"
         }
