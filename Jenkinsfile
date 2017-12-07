@@ -29,24 +29,25 @@ node("maven") {
         }
     }
 
-    // stage("Openshift Image build"){
-    //     openshift.withCluster() {
+    stage("Openshift Image build"){
+        openshift.withCluster() {
 
-    //     echo "Starting binary build in project ${project} for application ${appName}"
-    //     openshift.withProject(project) {
-    //     echo "Using file ${file} in build"
-    //     // start build
-    //     def build = openshift.startBuild("prometeoweb", "--from-file=${file}")
-    //     build.describe()
-    //     if (watchUntilCompletion) {
-    //         echo "user has requested to wait until build has finished"
-    //         build.watch {
-    //             return it.object().status.phase == "Complete"
-    //         }
-    //     }
-    // }
+            echo "Starting binary build in project ${project} for application ${appName}"
+            openshift.withProject(project) {
+                echo "Using file ${artifactId}-${APP_VERSION}.${packaging} in build"
+                def buildartifact=${artifactId}-${APP_VERSION}.${packaging}
 
-    //     }
-
-    // }
+            def build = openshift.startBuild("prometeoweb", "--from-file=/target${buildartifact}")
+            build.describe()
+            if (watchUntilCompletion) {
+                echo "user has requested to wait until build has finished"
+                build.watch {
+                    return it.object().status.phase == "Complete"
+                }
+            }
+            }
+        }
+    }
 }
+
+        
