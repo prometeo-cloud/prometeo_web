@@ -12,7 +12,6 @@ node("maven") {
     }
 
     stage("Maven build") {
-        dir('app') {
             // Get source code from repository
             git "${params.APP_GIT_URL}"
             // extract info from pom.xml
@@ -26,7 +25,6 @@ node("maven") {
             packaging = pom.packaging
             NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
             echo "Artifact = ${NEXUS_ARTIFACT_PATH}"       
-        }
     }
 
     stage("Openshift Image build"){
