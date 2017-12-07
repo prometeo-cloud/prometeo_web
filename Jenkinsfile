@@ -34,9 +34,8 @@ node("maven") {
 
             echo "Starting binary build in project ${openshift.project()} for application ${NEXUS_ARTIFACT_PATH}"
             openshift.withProject() {
-                echo "Using file ${artifactId}-${APP_VERSION}.${packaging} in build"
-                def buildartifact=${artifactId}-${APP_VERSION}.${packaging}
-
+                def buildartifact="${artifactId}-${APP_VERSION}.${packaging}"
+                echo "Using file ${buildartifact} in build"
                 def build = openshift.startBuild("prometeoweb", "--from-file=/target/${buildartifact}")
                 build.describe()
                 if (watchUntilCompletion) {
