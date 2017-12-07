@@ -14,9 +14,11 @@ node("maven") {
     stage("Maven build") {
             // Get source code from repository
             git "${params.APP_GIT_URL}"
+
             // extract info from pom.xml
             def pom = readMavenPom file: "pom.xml"
-            sh "mvn clean package -DskipTests; ls -latr target"   
+
+            sh "mvn clean package -DskipTests"   
  
             // global variable
             APP_VERSION = pom.version
@@ -34,10 +36,17 @@ node("maven") {
             openshift.withProject() {
                 def buildartifact="${artifactId}-${APP_VERSION}.${packaging}"
                 echo "Using file ${buildartifact} in build"
+
                 def build = openshift.startBuild("prometeoweb", "--from-file=./target/${buildartifact}")
                 build.describe()
                 build.watch {
                     return it.object().status.phase == "Complete"
+                }
+                def images = openshift.selector("imagestream")
+                images.withEach { // The closure body will be executed once for each selected object.
+        // The 'it' variable will be bound to a Selector which selects a single
+        // object which is the focus of the iteration.
+                    echo "Images: ${it.name()} is defined in ${openshift.project()}"
                 }
             }
         }
