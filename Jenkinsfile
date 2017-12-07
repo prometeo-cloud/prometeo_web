@@ -33,7 +33,7 @@ node("maven") {
         openshift.withCluster() {
 
             echo "Starting binary build in project ${openshift.project()} for application ${NEXUS_ARTIFACT_PATH}"
-            openshift.withProject() {
+            // openshift.withProject() {
                 echo "Using file ${artifactId}-${APP_VERSION}.${packaging} in build"
                 def buildartifact=${artifactId}-${APP_VERSION}.${packaging}
 
@@ -45,7 +45,7 @@ node("maven") {
                     return it.object().status.phase == "Complete"
                 }
             }
-            }
+            // }
         }
     }
 }
