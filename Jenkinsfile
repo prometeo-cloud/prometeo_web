@@ -36,11 +36,8 @@ node("maven") {
                 echo "Using file ${buildartifact} in build"
                 def build = openshift.startBuild("prometeoweb", "--from-file=./target/${buildartifact}")
                 build.describe()
-                if (watchUntilCompletion) {
-                    echo "user has requested to wait until build has finished"
-                    build.watch {
-                        return it.object().status.phase == "Complete"
-                    }
+                build.watch {
+                    return it.object().status.phase == "Complete"
                 }
             }
         }
