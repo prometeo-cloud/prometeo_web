@@ -21,9 +21,9 @@ node("maven") {
  
             // global variable
             APP_VERSION = pom.version
-            def artifactId = pom.artifactId
-            def groupId = pom.groupId.replace(".", "/")
-            def packaging = pom.packaging
+            artifactId = pom.artifactId
+            groupId = pom.groupId.replace(".", "/")
+            packaging = pom.packaging
             NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
             echo "Artifact = ${NEXUS_ARTIFACT_PATH}"       
         }
