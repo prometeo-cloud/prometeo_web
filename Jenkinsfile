@@ -10,19 +10,43 @@ node("maven") {
         // newman = load 'pipeline/functions/newman.groovy'
 
     }
-    // define maven with custom settings.xml (using this path as convention.. define a env var if desired...)
-    // def mvnCmd = "mvn -s ${WORKSPACE}/cicd/maven/settings.xml"
 
     stage("Maven build") {
-
         dir('app') {
             // Get source code from repository
             git "${params.APP_GIT_URL}"
             // extract info from pom.xml
             def pom = readMavenPom file: "pom.xml"
-            sh "mvn clean package -DskipTests"
-            // stash application template
-            // stash name: "app-template", includes: "${params.APP_TEMPLATE}"
+            sh "mvn clean package -DskipTests; ls -latr target"   
+ 
+            // global variable
+            APP_VERSION = pom.version
+            def artifactId = pom.artifactId
+            def groupId = pom.groupId.replace(".", "/")
+            def packaging = pom.packaging
+            NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
+            echo "Artifact = ${NEXUS_ARTIFACT_PATH}"       
         }
     }
+
+    // stage("Openshift Image build"){
+    //     openshift.withCluster() {
+
+    //     echo "Starting binary build in project ${project} for application ${appName}"
+    //     openshift.withProject(project) {
+    //     echo "Using file ${file} in build"
+    //     // start build
+    //     def build = openshift.startBuild("prometeoweb", "--from-file=${file}")
+    //     build.describe()
+    //     if (watchUntilCompletion) {
+    //         echo "user has requested to wait until build has finished"
+    //         build.watch {
+    //             return it.object().status.phase == "Complete"
+    //         }
+    //     }
+    // }
+
+    //     }
+
+    // }
 }
