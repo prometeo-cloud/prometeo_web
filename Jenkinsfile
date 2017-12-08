@@ -42,7 +42,7 @@ node("maven") {
                 build.watch {
                     return it.object().status.phase == "Complete"
                 }
-                openshift.tag("prometeoappLlatest","prometeoapp:currbuild")
+                openshift.tag("prometeoapp:latest","prometeoapp:currbuild")
         //         def images = openshift.selector("imagestream")
         //         images.withEach { // The closure body will be executed once for each selected object.
         // // The 'it' variable will be bound to a Selector which selects a single
