@@ -27,12 +27,11 @@ node("maven") {
             packaging = pom.packaging
             NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
             echo "Artifact = ${NEXUS_ARTIFACT_PATH}"   
-            OSE_TAG=${artifactId}-${APP_VERSION}    
+            // OSE_TAG=${artifactId}-${APP_VERSION}    
     }
 
     stage("Openshift Image build"){
         openshift.withCluster() {
-
             echo "Starting binary build in project ${openshift.project()} for application ${NEXUS_ARTIFACT_PATH}"
             openshift.withProject() {
                 def buildartifact="${artifactId}-${APP_VERSION}.${packaging}"
