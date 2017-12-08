@@ -58,7 +58,7 @@ node("maven") {
 
 node(){
     stage("Openshift Image promotion"){
-        echo "Starting resource creation}"
+        echo "Starting resource creation"
         openshift.withCluster() {
             openshift.withProject("test-project") {
             if (openshift.selector('dc', 'prometeoapp').exists()) {
@@ -66,7 +66,7 @@ node(){
                 openshift.selector('svc', 'prometeoapp').delete()
                 openshift.selector('route', 'prometeoapp').delete()
                 }
-                openshift.newApp("prometeoapp:${currtest}").narrow("svc").expose()
+                openshift.newApp("prometeoapp:currtest").narrow("svc").expose()
             }
         }
     }
