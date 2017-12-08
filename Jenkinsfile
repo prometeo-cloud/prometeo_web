@@ -42,6 +42,8 @@ node("maven") {
                 build.watch {
                     return it.object().status.phase == "Complete"
                 }
+
+                openshift.tag("prometeoapp:latest","prometeoapp:currtest")
                 // openshift.tag("prometeoapp:latest","prometeoapp:${OSE_TAG}")
         //         def images = openshift.selector("imagestream")
         //         images.withEach { // The closure body will be executed once for each selected object.
@@ -56,13 +58,8 @@ node("maven") {
 
 node(){
     stage("Openshift Image promotion"){
+        echo "Starting resource creation}"
         openshift.withCluster() {
-            echo "Starting tag project ${openshift.project()}"
-            openshift.withProject() {
-                openshift.tag("prometeoapp:latest","prometeoapp:currtest")
-            }
-
-
             openshift.withProject("test-project") {
             if (openshift.selector('dc', 'prometeoapp').exists()) {
                 openshift.selector('dc', 'prometeoapp').delete()
