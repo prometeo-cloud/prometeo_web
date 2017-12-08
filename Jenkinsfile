@@ -42,7 +42,7 @@ node("maven") {
                 build.watch {
                     return it.object().status.phase == "Complete"
                 }
-                openshift.tag("imagestreams/prometeoapp","prometeoapp:currbuild")
+                openshift.tag("prometeoappLlatest","prometeoapp:currbuild")
         //         def images = openshift.selector("imagestream")
         //         images.withEach { // The closure body will be executed once for each selected object.
         // // The 'it' variable will be bound to a Selector which selects a single
@@ -58,7 +58,7 @@ node(){
         openshift.withCluster() {
             echo "Starting binary build in project ${openshift.project()} for application ${NEXUS_ARTIFACT_PATH}"
             openshift.withProject() {
-                openshift.tag("imagestreams/prometeoapp:currbuild","prometeoapp:currtest")
+                openshift.tag("prometeoapp:currbuild","prometeoapp:currtest")
             }
         }
     }
