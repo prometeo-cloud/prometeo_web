@@ -69,6 +69,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <!--<configuration>-->
+                    <!--<archive>-->
+                        <!--&lt;!&ndash;<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>&ndash;&gt;-->
+                    <!--</archive>-->
+                <!--</configuration>-->
+            </plugin>
         </plugins>
+
     </build>
 </project>
