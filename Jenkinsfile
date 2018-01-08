@@ -26,8 +26,7 @@ node("maven") {
             groupId = pom.groupId.replace(".", "/")
             packaging = pom.packaging
             NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
-            echo "Artifact = ${NEXUS_ARTIFACT_PATH}"   
-            // OSE_TAG=${artifactId}-${APP_VERSION}    
+            echo "Artifact = ${NEXUS_ARTIFACT_PATH}"       
     }
 
     stage("Openshift Image build"){
@@ -42,31 +41,12 @@ node("maven") {
                 build.watch {
                     return it.object().status.phase == "Complete"
                 }
-
-                openshift.tag("prometeoapp:latest","prometeoapp:currtest")
-                // openshift.tag("prometeoapp:latest","prometeoapp:${OSE_TAG}")
-        //         def images = openshift.selector("imagestream")
-        //         images.withEach { // The closure body will be executed once for each selected object.
-        // // The 'it' variable will be bound to a Selector which selects a single
-        // // object which is the focus of the iteration.
-        //             echo "Images: ${it.name()} is defined in ${openshift.project()}"
-        //         }
-            }
-        }
-    }
-}
-
-node(){
-    stage("Openshift Image promotion"){
-        echo "Starting resource creation"
-        openshift.withCluster() {
-            openshift.withProject("test-project") {
-            if (openshift.selector('dc', 'prometeoapp').exists()) {
-                openshift.selector('dc', 'prometeoapp').delete()
-                openshift.selector('svc', 'prometeoapp').delete()
-                openshift.selector('route', 'prometeoapp').delete()
+                def images = openshift.selector("imagestream")
+                images.withEach { // The closure body will be executed once for each selected object.
+        // The 'it' variable will be bound to a Selector which selects a single
+        // object which is the focus of the iteration.
+                    echo "Images: ${it.name()} is defined in ${openshift.project()}"
                 }
-                openshift.newApp("prometeoapp:currtest").narrow("svc").expose()
             }
         }
     }

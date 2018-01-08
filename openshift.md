@@ -56,4 +56,6 @@ oc patch bc prometeo-web-pipeline -p '{"spec":{"strategy":{"jenkinsPipelineStrat
 
 ```
 curl -X POST https://192.168.99.104:8443/apis/build.openshift.io/v1/namespaces/myproject/buildconfigs/prometeo-web-pipeline/webhooks/b0Lr0renLAWGwPCT3VFw/generic
+
+curl -X POST https://192.168.99.104:8443/apis/build.openshift.io/v1/namespaces/myproject/buildconfigs/prometeo-web-pipeline/webhooks/b0Lr0renLAWGwPCT3VFw/generic
 ```
