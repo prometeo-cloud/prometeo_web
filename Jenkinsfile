@@ -1,7 +1,7 @@
 pipeline {
     agent none
-    def APP_VERSION = "" 
     stages {
+        def APP_VERSION = "" 
         stage("Init"){
             agent any
             steps{
