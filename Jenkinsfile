@@ -1,5 +1,6 @@
 pipeline {
     agent none
+    def APP_VERSION = "" 
     stages {
         stage("Init"){
             agent any
@@ -34,7 +35,7 @@ pipeline {
                 script {
                         def pom = readMavenPom file: "pom.xml"
                         sh "mvn clean package -DskipTests"
-                        def APP_VERSION = pom.version
+                        APP_VERSION = pom.version
                         artifactId = pom.artifactId
                         groupId = pom.groupId.replace(".", "/")
                         packaging = pom.packaging
