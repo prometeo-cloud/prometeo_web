@@ -2,8 +2,10 @@ pipeline {
     environment {
         APP_VERSION = ""
     }
-
     agent none
+    options { skipDefaultCheckout() }
+
+
     stages { 
         stage("Init"){
             agent any
@@ -36,6 +38,8 @@ pipeline {
             agent { label 'maven' }
             steps {
                 script {
+                        checkout scm
+                        
                         def pom = readMavenPom file: "pom.xml"
                         sh "mvn clean package -DskipTests"
                         APP_VERSION = pom.version
