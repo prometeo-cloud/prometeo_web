@@ -34,7 +34,7 @@ pipeline {
                 script {
                         def pom = readMavenPom file: "pom.xml"
                         sh "mvn clean package -DskipTests"
-                        APP_VERSION = pom.version
+                        def APP_VERSION = pom.version
                         artifactId = pom.artifactId
                         groupId = pom.groupId.replace(".", "/")
                         packaging = pom.packaging
@@ -93,10 +93,11 @@ pipeline {
             steps {
                  script {
                     openshift.withCluster() {
-                        openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev").narrow('svc').expose()
+                        openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev","-l app=prometeoweb -l version=${APP_VERSION}").narrow('svc').expose()
                     }
                     sleep 2
                     sh "oc set triggers dc/prometeoweb-dev --manual"
+                    sh "oc env dc/prometeoweb-dev ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo-dev:8080"
                     sh "oc set triggers dc/prometeoweb-dev --auto"
                 }
             }
