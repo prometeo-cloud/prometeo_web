@@ -18,8 +18,8 @@ pipeline {
                     }
                 }
             }
+            agent any
             steps {
-                agent any 
                 script {
                     openshift.withCluster() {
                         openshift.newBuild("--name=prometeoweb", "--image-stream=java:latest", "--binary")
