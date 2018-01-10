@@ -107,6 +107,8 @@ pipeline {
 
                     sleep 5
 
+                    sh "oc whoami"
+                    sh "oc get dc --show-labels=true"
                     sh "oc set triggers dc/prometeoweb-dev --manual"
                     sh "oc env dc/prometeoweb-dev ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo-dev:8080"
                     sh "oc set triggers dc/prometeoweb-dev --auto"
