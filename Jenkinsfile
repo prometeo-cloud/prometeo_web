@@ -11,6 +11,7 @@ pipeline {
             steps{
                 script {
                     sh "oc version"
+                    sh "oc whoami"
                 }
             }
         }
