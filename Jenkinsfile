@@ -103,13 +103,16 @@ pipeline {
                     openshift.withCluster() {
                         openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev","-l version=${APP_VERSION}").narrow('svc').expose()
                         openshift.selector( 'deploymentconfig/prometeoweb-dev' ).describe()
+                        openshift.raw('set','triggers','dc/prometeoweb-dev', '--manual')
+                        openshift.raw('env','dc/prometeoweb-dev','ADMIN_PASSWORD=test','PROMETEO_AUTHORIZATION=test','PROMETEO_URL=http://prometeo-dev:8080')
+                        openshift.raw('set','triggers','dc/prometeoweb-dev', '--auto')
                     }
-                    
-                    sh "oc whoami"
-                    sh "oc get dc --show-labels=true"
-                    sh "oc set triggers dc/prometeoweb-dev --manual"
-                    sh "oc env dc/prometeoweb-dev ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo-dev:8080"
-                    sh "oc set triggers dc/prometeoweb-dev --auto"
+
+                    // sh "oc whoami"
+                    // sh "oc get dc --show-labels=true"
+                    // sh "oc set triggers dc/prometeoweb-dev --manual"
+                    // sh "oc env dc/prometeoweb-dev ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo-dev:8080"
+                    // sh "oc set triggers dc/prometeoweb-dev --auto"
                 }
             }
         }
