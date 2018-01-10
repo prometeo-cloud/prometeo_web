@@ -103,9 +103,9 @@ pipeline {
                     openshift.withCluster() {
                         openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev","-l version=${APP_VERSION}").narrow('svc').expose()
                         openshift.selector( 'deploymentconfig/prometeoweb-dev' ).describe()
-                        openshift.raw('set','triggers','dc/prometeoweb-dev', '--manual')
-                        openshift.raw('env','dc/prometeoweb-dev','ADMIN_PASSWORD=test','PROMETEO_AUTHORIZATION=test','PROMETEO_URL=http://prometeo-dev:8080')
-                        openshift.raw('set','triggers','dc/prometeoweb-dev', '--auto')
+                        openshift.raw('set','triggers','deploymentconfig/prometeoweb-dev', '--manual')
+                        openshift.raw('env','deploymentconfig/prometeoweb-dev','ADMIN_PASSWORD=test','PROMETEO_AUTHORIZATION=test','PROMETEO_URL=http://prometeo-dev:8080')
+                        openshift.raw('set','triggers','deploymentconfig/prometeoweb-dev', '--auto')
                     }
 
                     // sh "oc whoami"
