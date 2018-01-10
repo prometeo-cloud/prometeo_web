@@ -101,8 +101,9 @@ pipeline {
                  script {
                     openshift.withCluster() {
                         openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev","-l version=${APP_VERSION}").narrow('svc').expose()
+                        openshift.selector( 'deploymentconfig/prometeoweb-dev' ).describe()
                     }
-                    
+
                     sleep 5
 
                     sh "oc set triggers dc/prometeoweb-dev --manual"
