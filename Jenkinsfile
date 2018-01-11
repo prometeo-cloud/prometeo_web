@@ -3,15 +3,16 @@ pipeline {
         APP_VERSION = ""
     }
     agent none
-    options { skipDefaultCheckout() }
+    options {
+        skipDefaultCheckout()
+    }
 
-    stages { 
-        stage("Init"){
+    stages {
+        stage("Init") {
             agent any
-            steps{
+            steps {
                 script {
                     sh "oc version"
-                    sh "oc whoami"
                 }
             }
         }
@@ -20,7 +21,9 @@ pipeline {
             when {
                 expression {
                     openshift.withCluster() {
-                        return !openshift.selector("bc", "prometeoweb").exists();
+                        openshift.withProject('prometeo-dev') {
+                            return !openshift.selector("bc", "prometeoweb").exists();
+                        }
                     }
                 }
             }
@@ -28,35 +31,41 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.newBuild("--name=prometeoweb", "--image-stream=java:latest", "--binary")
+                        openshift.withProject('prometeo-dev') {
+                            openshift.newBuild("--name=prometeoweb", "--image-stream=prometeo-dev/java:latest", "--binary")
+                        }
                     }
                 }
             }
         }
 
         stage("Maven build") {
-            agent { label 'maven' }
+            agent {
+                label 'maven'
+            }
             steps {
                 script {
-                        checkout scm
+                    checkout scm
 
-                        def pom = readMavenPom file: "pom.xml"
-                        sh "mvn clean package -DskipTests"
-                        APP_VERSION = pom.version
-                        artifactId = pom.artifactId
-                        groupId = pom.groupId.replace(".", "/")
-                        packaging = pom.packaging
-                        NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"
-                        echo "Building container image with artifact = ${NEXUS_ARTIFACT_PATH}"
+                    def pom = readMavenPom file: "pom.xml"
+                    sh "mvn clean package -DskipTests"
+                    APP_VERSION = pom.version
+                    artifactId = pom.artifactId
+                    groupId = pom.groupId.replace(".", "/")
+                    packaging = pom.packaging
+                    NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"
+                    echo "Building container image with artifact = ${NEXUS_ARTIFACT_PATH}"
 
-                        // This is here until we get the Nexus repo setup
-                        openshift.withCluster() {
+                    // This is here until we get the Nexus repo setup
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
                             openshift.selector("bc", "prometeoweb").startBuild("--from-file=target/${artifactId}-${APP_VERSION}.${packaging}", "--wait")
                         }
                     }
                 }
+            }
         }
-        
+
 
         // stage('Build Application Image') {
         //     agent { label 'maven' }
@@ -73,7 +82,7 @@ pipeline {
             agent any
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
-                    input 'Do you approve prometeoweb deployment into DEV environment?'
+                    input 'Deploy into DEV environment?'
                 }
             }
         }
@@ -82,39 +91,88 @@ pipeline {
             agent any
             steps {
                 script {
-                openshift.withCluster() {
-                    openshift.tag("prometeoweb:latest", "prometeoweb:dev")
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.tag("prometeoweb:latest", "prometeoweb:dev")
+                        }
                     }
                 }
             }
         }
 
-        stage('Create app if not already there') {
+        stage('Create app in DEV if not already there') {
             agent any
             when {
                 expression {
                     openshift.withCluster() {
-                        return !openshift.selector("dc", "prometeoweb-dev").exists();
+                        openshift.withProject('prometeo-dev') {
+                            return !openshift.selector("dc", "prometeoweb").exists();
+                        }
                     }
                 }
             }
             steps {
-                 script {
+                script {
                     openshift.withCluster() {
-                        openshift.newApp("prometeoweb:dev", "--name=prometeoweb-dev","-l version=${APP_VERSION}").narrow('svc').expose()
-                        openshift.selector( 'deploymentconfig/prometeoweb-dev' ).describe()
-                        openshift.raw('set','triggers','deploymentconfig/prometeoweb-dev', '--manual')
-                        openshift.raw('env','deploymentconfig/prometeoweb-dev','ADMIN_PASSWORD=test','PROMETEO_AUTHORIZATION=test','PROMETEO_URL=http://prometeo-dev:8080')
-                        openshift.raw('set','triggers','deploymentconfig/prometeoweb-dev', '--auto')
+                        openshift.withProject('prometeo-dev') {
+                            openshift.newApp("prometeoweb:dev", "--name=prometeoweb", "-l version=${APP_VERSION}").narrow('svc').expose()
+                            openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--manual')
+                            openshift.raw('env', 'deploymentconfig/prometeoweb', 'ADMIN_PASSWORD=test', 'PROMETEO_AUTHORIZATION=test', 'PROMETEO_URL=http://prometeo-dev:8080')
+                            openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--auto')
+                        }
                     }
+                }
+            }
+        }
 
-                    // sh "oc whoami"
-                    // sh "oc get dc --show-labels=true"
-                    // sh "oc set triggers dc/prometeoweb-dev --manual"
-                    // sh "oc env dc/prometeoweb-dev ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo-dev:8080"
-                    // sh "oc set triggers dc/prometeoweb-dev --auto"
+
+
+        stage('Test Deployment') {
+            agent any
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    input 'Do you approve deployment to Test environment ?'
+                }
+            }
+        }
+
+        stage('Promote to TEST') {
+            agent any
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.tag("prometeoweb:dev", "prometeoweb:test")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Create app in TEST if not already there') {
+            agent any
+            when {
+                expression {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-test') {
+                            return !openshift.selector("dc", "prometeoweb").exists();
+                        }
+                    }
+                }
+            }
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-test') {
+                            openshift.newApp("prometeo-dev/prometeoweb:test", "--name=prometeoweb").narrow('svc')
+                            openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--manual')
+                            openshift.raw('volume', 'deploymentconfig/prometeoweb', '--add', '-t secret', '-m /tmp/secrets --secret-name=mongodb --name=mongodb-secret')
+                            openshift.raw('volume', 'deploymentconfig/prometeoweb', '--add -t secret -m /app/.ssh/keys --secret-name=sshkey --default-mode=0600')
+                            openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--auto')
+                        }
+                    }
                 }
             }
         }
     }
-}        
+}
