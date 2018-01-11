@@ -115,7 +115,7 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject('prometeo-dev') {
-                            openshift.newApp("prometeoweb:dev", "--name=prometeoweb", "-l version=${APP_VERSION}").narrow('svc').expose()
+                            openshift.newApp("prometeo-dev/prometeoweb:dev", "--name=prometeoweb", "-l version=${APP_VERSION}").narrow('svc').expose()
                             openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--manual')
                             openshift.raw('env', 'deploymentconfig/prometeoweb', 'ADMIN_PASSWORD=test', 'PROMETEO_AUTHORIZATION=test', 'PROMETEO_URL=http://prometeo:8080')
                             openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--auto')
