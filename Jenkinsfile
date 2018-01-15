@@ -2,6 +2,7 @@ pipeline {
     environment {
         APP_VERSION = ""
     }
+    
     agent none
     options {
         skipDefaultCheckout()
