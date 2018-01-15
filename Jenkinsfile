@@ -166,7 +166,7 @@ pipeline {
                         openshift.withProject('prometeo-test') {
                             openshift.newApp("prometeo-dev/prometeoweb:test", "--name=prometeoweb").narrow('svc')
                             openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--manual')
-                            openshift.raw('env', 'dc/prometeoweb ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo')
+                            openshift.raw('env', 'deploymentconfig/prometeoweb ADMIN_PASSWORD=test PROMETEO_AUTHORIZATION=test PROMETEO_URL=http://prometeo')
                             openshift.raw('set', 'triggers', 'deploymentconfig/prometeoweb', '--auto')
                         }
                     }
