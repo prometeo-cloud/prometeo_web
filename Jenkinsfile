@@ -1,56 +1,170 @@
-node("maven") {
-
-    // download and configure all common cicd stuff		 
-    dir('cicd') {
-        // download all cicd required files		
-        // git "${params.CICD_GIT_URL}"
-        // load openshift-utils functions (using this path as convention.. define a env var if desired...)		
-        // openshiftUtils = load 'pipeline/functions/openshift-utils.groovy'
-        // load groovy functions		
-        // newman = load 'pipeline/functions/newman.groovy'
-
+pipeline {
+    environment {
+        APP_VERSION = ""
     }
 
-    stage("Maven build") {
-            // Get source code from repository
-            git "${params.APP_GIT_URL}"
-
-            // extract info from pom.xml
-            def pom = readMavenPom file: "pom.xml"
-
-            sh "mvn clean package -DskipTests"   
- 
-            // global variable
-            APP_VERSION = pom.version
-            artifactId = pom.artifactId
-            groupId = pom.groupId.replace(".", "/")
-            packaging = pom.packaging
-            NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"  
-            echo "Artifact = ${NEXUS_ARTIFACT_PATH}"       
+    agent none
+    options {
+        skipDefaultCheckout()
     }
 
-    stage("Openshift Image build"){
-        openshift.withCluster() {
-
-            echo "Starting binary build in project ${openshift.project()} for application ${NEXUS_ARTIFACT_PATH}"
-            openshift.withProject() {
-                def buildartifact="${artifactId}-${APP_VERSION}.${packaging}"
-                echo "Using file ${buildartifact} in build"
-
-                def build = openshift.startBuild("prometeoweb", "--from-file=./target/${buildartifact}")
-                build.describe()
-                build.watch {
-                    return it.object().status.phase == "Complete"
+    stages {
+        stage("Init") {
+            agent any
+            steps {
+                script {
+                    sh "oc version"
                 }
-                def images = openshift.selector("imagestream")
-                images.withEach { // The closure body will be executed once for each selected object.
-        // The 'it' variable will be bound to a Selector which selects a single
-        // object which is the focus of the iteration.
-                    echo "Images: ${it.name()} is defined in ${openshift.project()}"
+            }
+        }
+
+        stage('Create Image Builder Prometeoweb') {
+            when {
+                expression {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            return !openshift.selector("bc", "prometeoweb").exists();
+                        }
+                    }
+                }
+            }
+            agent any
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.newBuild("--name=prometeoweb", "--image-stream=prometeo-dev/java:latest", "--binary")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("Maven build") {
+            agent {
+                label 'maven'
+            }
+            steps {
+                script {
+                    checkout scm
+
+                    def pom = readMavenPom file: "pom.xml"
+                    sh "mvn clean package -DskipTests"
+                    APP_VERSION = pom.version
+                    artifactId = pom.artifactId
+                    groupId = pom.groupId.replace(".", "/")
+                    packaging = pom.packaging
+                    NEXUS_ARTIFACT_PATH = "${groupId}/${artifactId}/${APP_VERSION}/${artifactId}-${APP_VERSION}.${packaging}"
+                    echo "Building container image with artifact = ${NEXUS_ARTIFACT_PATH}"
+
+                    // This is here until we get the Nexus repo setup
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.selector("bc", "prometeoweb").startBuild("--from-file=target/${artifactId}-${APP_VERSION}.${packaging}", "--wait")
+                        }
+                    }
+                }
+            }
+        }
+
+
+        // stage('Build Application Image') {
+        //     agent { label 'maven' }
+        //     steps {
+        //         script {
+        //             openshift.withCluster() {
+        //                 openshift.selector("bc", "prometeoweb").startBuild("--from-file=target/${artifactId}-${APP_VERSION}.${packaging}", "--wait")
+        //             }
+        //         }
+        //     }
+        // }
+
+        stage('Dev Deployment') {
+            agent any
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    input 'Deploy into DEV environment?'
+                }
+            }
+        }
+
+        stage('Promote to DEV') {
+            agent any
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.tag("prometeoweb:latest", "prometeoweb:dev")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Create app in DEV if not already there') {
+            agent any
+            when {
+                expression {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            return !openshift.selector("dc", "prometeoweb").exists();
+                        }
+                    }
+                }
+            }
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.newApp("prometeo-dev/prometeoweb:dev", "--name=prometeoweb -e ADMIN_PASSWORD=test -e PROMETEO_AUTHORIZATION=test -e PROMETEO_URL=http://prometeo").narrow('svc').expose()
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Test Deployment') {
+            agent any
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    input 'Do you approve deployment to Test environment ?'
+                }
+            }
+        }
+
+        stage('Promote to TEST') {
+            agent any
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-dev') {
+                            openshift.tag("prometeoweb:dev", "prometeoweb:test")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Create app in TEST if not already there') {
+            agent any
+            when {
+                expression {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-test') {
+                            return !openshift.selector("dc", "prometeoweb").exists();
+                        }
+                    }
+                }
+            }
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject('prometeo-test') {
+                            openshift.newApp("prometeo-dev/prometeoweb:test", "--name=prometeoweb -e ADMIN_PASSWORD=test -e PROMETEO_AUTHORIZATION=test -e PROMETEO_URL=http://prometeo").narrow('svc').expose()
+                        }
+                    }
                 }
             }
         }
     }
 }
-
-        
